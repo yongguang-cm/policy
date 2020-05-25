@@ -1,0 +1,86 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  overflow: auto !important;
+  -webkit-overflow-scrolling: touch;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Helvetica, Arial, sans-serif;
+}
+
+#example, .container {
+  height: 100%;
+}
+
+.body {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: scroll;
+}
+
+.fixed-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background-color: #ddd;
+}
+
+hr {
+  margin: 70px 10px;
+}
+
+// fix style
+.am-modal-content {
+  height: auto;
+  min-height: 100%;
+}
+
+// .am-popup-mask, .am-popup-wrap, .am-popup {
+//   position: absolute;
+// }
+.am-refresh-control-pull, .am-refresh-control-release {
+  justify-content: flex-start;
+}
+
+.line {
+  border-bottom: 1px solid grey;
+  min-height: 2.5rem;
+  padding: 0.25rem;
+  font-size: 0.75rem;
+
+  .am-flexbox-item {
+    text-align: end;
+
+    &.text {
+      text-align: start;
+    }
+  }
+
+  .text {
+
+  }
+}
+
+.form-error {
+  padding: 0 1rem;
+  color: RED;
+  text-align: right;
+}
+
+.hint {
+  padding: 1rem;
+  color: #AAA;
+  font-size: 0.8rem;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 1rem;
+  text-align: center;
+}
