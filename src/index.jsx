@@ -23,8 +23,8 @@ class Index extends React.Component {
         D3: "商业贸易、动产租赁、绿色工业等",
         D4: "一般纳税人",
         D5: 10000000,
-        G9: 100000,
-        G11: 50000
+        G9: null,
+        G11: null
       }
     };
   }

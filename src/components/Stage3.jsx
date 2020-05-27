@@ -1,7 +1,7 @@
 import React from 'react';
 import {createForm} from 'rc-form';
 
-import {Picker, List, Checkbox, InputItem, Button, WhiteSpace, WingBlank} from 'antd-mobile';
+import {Picker, List, InputItem, Button, WhiteSpace, WingBlank} from 'antd-mobile';
 
 
 const isIPhone = new RegExp('\\biPhone\\b|\\biPod\\b', 'i').test(window.navigator.userAgent);
@@ -28,7 +28,9 @@ class Demo extends React.Component {
     for (let key of Object.keys(this.props.data)) {
       const v = this.props.data[key];
 
-      if (typeof (v) === 'number') {
+      if (v === null || v === undefined) {
+        result[key] = null;
+      } else if (typeof (v) === 'number') {
         result[key] = `${v}`
       } else if (typeof (v) === 'string') {
         result[key] = [v];
@@ -45,12 +47,17 @@ class Demo extends React.Component {
         for (let key of Object.keys(value)) {
           let v = value[key];
 
-          if (v !== undefined) {
+          if (v !== undefined && v !== null) {
             if (typeof (v) === 'string') {
               result[key] = parseFloat(v);
+              if (isNaN(result[key])) {
+                result[key] = null;
+              }
             } else if (typeof (v) === 'object' && v instanceof Array) {
               result[key] = v[0]
             }
+          } else {
+            result[key] = null;
           }
         }
 
@@ -60,6 +67,7 @@ class Demo extends React.Component {
   }
 
   render() {
+    console.log(this.props.data);
     const {getFieldProps, getFieldError} = this.props.form;
     return (<form className="form" onsubmit="return false">
       <List renderHeader={() => <b>必填信息</b>}>
@@ -113,19 +121,26 @@ class Demo extends React.Component {
 
       </List>
 
-      <List renderHeader={() => <b>应交税费</b>}>
+      <List renderHeader={() => <b>应交税费(选填)</b>}>
         <InputItem
-          {...getFieldProps('G9', {rules: [{required: true}]})}
+          {...getFieldProps('G9', {
+            // getValueProps: value => {
+            //   if (isNaN(value)) {
+            //     return null;
+            //   } else {
+            //     return value;
+            //   }
+            //}
+          })}
           type="money"
           placeholder="请输入"
           clear
           moneyKeyboardWrapProps={moneyKeyboardWrapProps}
         >企业所得税</InputItem>
-        <div className="form-error"> {(getFieldError('G9')) ? "必填" : null} </div>
 
 
         <InputItem
-          {...getFieldProps('G11', {rules: [{required: true}]})}
+          {...getFieldProps('G11')}
           type="money"
           placeholder="请输入"
           clear
@@ -134,7 +149,6 @@ class Demo extends React.Component {
         >
           <div style={{fontSize: "0.8rem", whiteSpace: "normal"}}>工资、股权转让及经营所得查帐征收等个税</div>
         </InputItem>
-        <div className="form-error"> {(getFieldError('G11')) ? "必填" : null} </div>
 
       </List>
       <WhiteSpace/>
@@ -143,7 +157,8 @@ class Demo extends React.Component {
       </WingBlank>
       <WhiteSpace/>
 
-    </form>);
+    </form>)
+      ;
   }
 }
 
