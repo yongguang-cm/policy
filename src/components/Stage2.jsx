@@ -66,15 +66,16 @@ export default class Demo extends React.Component {
     cell.M8 = '正常税率';
     cell.M9 = '简易税率';
 
-    // =IF(D3&D4&C8=M3&N3&N2,13%,IF(D3&D4&C8=M4&N3&N2,9%,IF(D3&D4&C8=M5&N3&N2,6%,IF(D3&D4&C8=M6&N3&N2,9%,IF(D3&D4&C8=M6&N3&M2,5%,IF(D3&D4&C8=M6&N4&N2,5%,IF(D3&D4&C8=M3&N3&M2,3%,IF(D3&D4&C8=M4&N3&M2,3%,3%))))))))
+    // 旧=IF(D3&D4&C8=M3&N3&N2,13%,IF(D3&D4&C8=M4&N3&N2,9%,IF(D3&D4&C8=M5&N3&N2,6%,IF(D3&D4&C8=M6&N3&N2,9%,IF(D3&D4&C8=M6&N3&M2,5%,IF(D3&D4&C8=M6&N4&N2,5%,IF(D3&D4&C8=M3&N3&M2,3%,IF(D3&D4&C8=M4&N3&M2,3%,3%))))))))
+    // 新=IF(D3&D4&C8=M3&N3&N2,13%,IF(D3&D4&C8=M4&N3&N2,9%,IF(D3&D4&C8=M5&N3&N2,6%,IF(D3&D4&C8=M6&N3&N2,9%,IF(D3&D4&C8=M6&N3&M2,5%,IF(D3&D4&C8=M6&N4&N2,5%,IF(D3&D4&C8=M3&N3&M2,1%,IF(D3&D4&C8=M4&N3&M2,1%,1%))))))))
     cell.E8 = `${cell.D3}${cell.D4}${cell.C8}` === `${cell.M3}${cell.N3}${cell.N2}` ? 0.13
       : (`${cell.D3}${cell.D4}${cell.C8}` === `${cell.M4}${cell.N3}${cell.N2}` ? 0.09
         : (`${cell.D3}${cell.D4}${cell.C8}` === `${cell.M5}${cell.N3}${cell.N2}` ? 0.06
           : (`${cell.D3}${cell.D4}${cell.C8}` === `${cell.M6}${cell.N3}${cell.N2}` ? 0.09
             : (`${cell.D3}${cell.D4}${cell.C8}` === `${cell.M6}${cell.N3}${cell.M2}` ? 0.05
               : (`${cell.D3}${cell.D4}${cell.C8}` === `${cell.M6}${cell.N4}${cell.N2}` ? 0.05
-                : (`${cell.D3}${cell.D4}${cell.C8}` === `${cell.M3}${cell.N3}${cell.M2}` ? 0.03
-                  : (`${cell.D3}${cell.D4}${cell.C8}` === `${cell.M4}${cell.N3}${cell.M2}` ? 0.03 : 0.03
+                : (`${cell.D3}${cell.D4}${cell.C8}` === `${cell.M3}${cell.N3}${cell.M2}` ? 0.01
+                  : (`${cell.D3}${cell.D4}${cell.C8}` === `${cell.M4}${cell.N3}${cell.M2}` ? 0.01 : 0.01
                   )))))));
     // =ROUND(IF(AND(D4="一般纳税人",C8="简易税率"),D5/(1+E8)*E8,D5/(1+E8)*E8),2)
     cell.G8 = cell.D4 === "一般纳税人" && cell.C8 === '简易税率' ? cell.D5 / (1 + cell.E8) * cell.E8 : cell.D5 / (1 + cell.E8) * cell.E8;
@@ -94,7 +95,12 @@ export default class Demo extends React.Component {
             : (cell.C10 * cell.D5 > 500000 ? 0.35 : null))))
 
     //=ROUND(MAX((D5/(1+E8))*C10*0.01*{5,10,20,30,35}-{0,1500,10500,40500,65500},0),2)
-    cell.G10 = Math.max((cell.D5 / (1 + cell.E8)) * cell.C10 * 0.01 * 5 - 0, 0);
+    // cell.G10 = Math.max((cell.D5 / (1 + cell.E8)) * cell.C10 * 0.01 * 5 - 0, 0);
+    const a = [0, 1500, 10500, 40500, 65500];
+    cell.G10 = [0, ...[5, 10, 20, 30, 35].map((first, idx) => {
+      return (cell.D5 / (1 + cell.E8)) * cell.C10 * 0.01 * first - a[idx];
+    })].reduce((x, y) => Math.max(x, y), 0);
+
 
     //=IF(D4=N3,E8*5%,E8*5%/2)
     cell.E12 = cell.D4 === cell.N3 ? cell.E8 * 0.05 : cell.E8 * 0.05 / 2;
@@ -164,11 +170,13 @@ export default class Demo extends React.Component {
     cell.E24 = cell.G11 * cell.B24 * cell.C24;
 
     //=IF(G17<100000,50%,IF(G17<500000,60%,IF(G17<1000000,65%,IF(G17<3000000,70%,IF(G17>=3000000,80%)))))
+    //=IF(G17<100000,50%,IF(G17<500000,60%,IF(G17<1000000,65%,IF(G17<3000000,70%,IF(G17<5000000,75%,IF(G17>=5000000,80%))))))
     cell.G21 = cell.G17 < 100000 ? 0.5
       : (cell.G17 < 500000 ? 0.6
         : (cell.G17 < 1000000 ? 0.65
           : (cell.G17 < 3000000 ? 0.7
-            : (cell.G17 >= 3000000 ? 0.8 : 0.8))));
+            : (cell.G17 < 5000000 ? 0.75
+              : (cell.G17 >= 5000000 ? 0.8 : 0.8)))));
 
     //=ROUND((G8*50%*65%*G21),0)
     cell.H21 = cell.G8 * 0.5 * 0.65 * cell.G21;
